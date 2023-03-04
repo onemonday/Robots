@@ -3,16 +3,10 @@ package gui;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
-import javax.swing.JDesktopPane;
-import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 
 import log.Logger;
 
@@ -45,8 +39,17 @@ public class MainApplicationFrame extends JFrame
         gameWindow.setSize(400,  400);
         addWindow(gameWindow);
 
+        UIManager.put("OptionPane.yesButtonText", "Да");
+        UIManager.put("OptionPane.noButtonText", "Нет");
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                closeProgram();
+            }
+        });
         setJMenuBar(generateMenuBar());
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     }
     
     protected LogWindow createLogWindow()
@@ -64,6 +67,20 @@ public class MainApplicationFrame extends JFrame
     {
         desktopPane.add(frame);
         frame.setVisible(true);
+    }
+
+    protected void closeProgram() {
+        int response = JOptionPane.showConfirmDialog(MainApplicationFrame.this,
+                "Закрыть приложение?",
+                "Закрытие",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (response == JOptionPane.YES_OPTION) {
+            this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+            Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(
+                    new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+        }
     }
     
 //    protected JMenuBar createMenuBar() {
@@ -135,8 +152,24 @@ public class MainApplicationFrame extends JFrame
             testMenu.add(addLogMessageItem);
         }
 
+        JMenu closeMenu = new JMenu("Закрытие");
+        closeMenu.setMnemonic(KeyEvent.VK_C);
+        closeMenu.getAccessibleContext().setAccessibleDescription(
+                "Закрытие программы"
+        );
+
+        {
+            JMenuItem exitItem = new JMenuItem("Выход", KeyEvent.VK_X | KeyEvent.VK_ALT);
+            exitItem.addActionListener((event) -> {
+                Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(
+                        new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+            });
+            closeMenu.add(exitItem);
+        }
+
         menuBar.add(lookAndFeelMenu);
         menuBar.add(testMenu);
+        menuBar.add(closeMenu);
         return menuBar;
     }
     
