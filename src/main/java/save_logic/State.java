@@ -9,16 +9,11 @@ public class State {
 
     public State() {
         this.map = new HashMap<>();
-
     }
 
     public Object getElement(String elementName) {
         return map.get(elementName);
     }
-
-//    public Set<Map.Entry<String, Object>> getMap() {
-//        var hui =  map.entrySet();
-//    }
 
     public void putElement(String elementName, Object element) {
         map.put(elementName, element);
