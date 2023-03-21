@@ -5,6 +5,7 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,12 +44,12 @@ public class MainApplicationFrame extends JFrame
         
         
         LogWindow logWindow = createLogWindow();
-        logWindow.restoreState(states.get("LogWindow"));
+        // logWindow.restoreState(states.get("LogWindow"));
         addWindow(logWindow);
 
         GameWindow gameWindow = new GameWindow();
-        gameWindow.restoreState(states.get("GameWindow"));
-        // gameWindow.setSize(400,  400);
+        gameWindow.setSize(400,  400);
+        // gameWindow.restoreState(states.get("GameWindow"));
         addWindow(gameWindow);
 
         UIManager.put("OptionPane.yesButtonText", "Да");
@@ -62,6 +63,8 @@ public class MainApplicationFrame extends JFrame
         });
         setJMenuBar(generateMenuBar());
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
+        restoreStates();
     }
     
     protected LogWindow createLogWindow()
@@ -106,17 +109,21 @@ public class MainApplicationFrame extends JFrame
         }
     }
 
-//    private void restoreStates() {
-//        StateHandler stateHandler = new StateHandler(dir);
-//        var stateMap = stateHandler.restoreAllData();
-//        var keys = stateMap.keySet();
-//
-//        for (final JInternalFrame frame : desktopPane.getAllFrames()) {
-//            if (frame instanceof Saveable && keys.contains(((Saveable) frame).getPrefix())) {
-//                ((Saveable) frame).restoreState(stateMap.get(((Saveable) frame).getPrefix()));
-//            }
-//        }
-//    }
+    private void restoreStates() {
+        File file = new File (dir);
+        if (!file.exists())
+            return;
+
+        StateHandler stateHandler = new StateHandler(dir);
+        var stateMap = stateHandler.restoreAllData();
+        var keys = stateMap.keySet();
+
+        for (final JInternalFrame frame : desktopPane.getAllFrames()) {
+            if (frame instanceof Saveable && keys.contains(((Saveable) frame).getPrefix())) {
+                ((Saveable) frame).restoreState(stateMap.get(((Saveable) frame).getPrefix()));
+            }
+        }
+    }
     
 //    protected JMenuBar createMenuBar() {
 //        JMenuBar menuBar = new JMenuBar();
