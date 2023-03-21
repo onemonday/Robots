@@ -5,10 +5,16 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.*;
 
 import log.Logger;
+import save_logic.Saveable;
+import save_logic.State;
+import save_logic.StateHandler;
 
 /**
  * Что требуется сделать:
@@ -19,6 +25,7 @@ import log.Logger;
 public class MainApplicationFrame extends JFrame
 {
     private final JDesktopPane desktopPane = new JDesktopPane();
+    private final String dir = (System.getProperty("user.home") + "/state.json");
     
     public MainApplicationFrame() {
         //Make the big window be indented 50 pixels from each edge
@@ -30,13 +37,18 @@ public class MainApplicationFrame extends JFrame
             screenSize.height - inset*2);
 
         setContentPane(desktopPane);
+
+        StateHandler stateHandler = new StateHandler(dir);
+        Map<String, State> states = stateHandler.restoreAllData();
         
         
         LogWindow logWindow = createLogWindow();
+        logWindow.restoreState(states.get("LogWindow"));
         addWindow(logWindow);
 
         GameWindow gameWindow = new GameWindow();
-        gameWindow.setSize(400,  400);
+        gameWindow.restoreState(states.get("GameWindow"));
+        // gameWindow.setSize(400,  400);
         addWindow(gameWindow);
 
         UIManager.put("OptionPane.yesButtonText", "Да");
@@ -77,11 +89,34 @@ public class MainApplicationFrame extends JFrame
         );
 
         if (response == JOptionPane.YES_OPTION) {
+            StateHandler stateHandler = new StateHandler(dir);
+            List<Saveable> saveableObjects = new ArrayList<>();
+
+            for (final JInternalFrame frame : desktopPane.getAllFrames()) {
+                if (frame instanceof Saveable) {
+                    saveableObjects.add((Saveable) frame);
+                }
+            }
+
+            stateHandler.save(saveableObjects);
+
             this.setDefaultCloseOperation(EXIT_ON_CLOSE);
             Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(
                     new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         }
     }
+
+//    private void restoreStates() {
+//        StateHandler stateHandler = new StateHandler(dir);
+//        var stateMap = stateHandler.restoreAllData();
+//        var keys = stateMap.keySet();
+//
+//        for (final JInternalFrame frame : desktopPane.getAllFrames()) {
+//            if (frame instanceof Saveable && keys.contains(((Saveable) frame).getPrefix())) {
+//                ((Saveable) frame).restoreState(stateMap.get(((Saveable) frame).getPrefix()));
+//            }
+//        }
+//    }
     
 //    protected JMenuBar createMenuBar() {
 //        JMenuBar menuBar = new JMenuBar();
