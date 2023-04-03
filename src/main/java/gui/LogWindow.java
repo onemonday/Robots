@@ -75,7 +75,6 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Save
 
         var isHidden = state.getElement("is_hidden");
 
-        System.out.println(width);
         this.setSize(Math.toIntExact((Long) width), Math.toIntExact((Long) height));
         this.setLocation(Math.toIntExact(locationX), Math.toIntExact(locationY));
 

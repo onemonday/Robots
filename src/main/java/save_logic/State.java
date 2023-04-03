@@ -23,10 +23,4 @@ public class State {
         return map.keySet();
     }
 
-//    public State merge(State state1, State state2) {
-//        State mergedState = new State();
-//
-//        return mergedState;
-//    }
-
 }
