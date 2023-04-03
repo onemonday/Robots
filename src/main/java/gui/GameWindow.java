@@ -13,10 +13,10 @@ public class GameWindow extends JInternalFrame implements Saveable
 {
     private final GameVisualizer m_visualizer;
 
-    public GameWindow() 
+    public GameWindow(GameVisualizer controller)
     {
         super("Игровое поле", true, true, true, true);
-        m_visualizer = new GameVisualizer();
+        m_visualizer = controller;
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(m_visualizer, BorderLayout.CENTER);
         getContentPane().add(panel);
