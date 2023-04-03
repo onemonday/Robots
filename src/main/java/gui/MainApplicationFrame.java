@@ -27,6 +27,7 @@ public class MainApplicationFrame extends JFrame
 {
     private final JDesktopPane desktopPane = new JDesktopPane();
     private final String dir = (System.getProperty("user.home") + "/state.json");
+    private final GameVisualizer controller;
     
     public MainApplicationFrame() {
         //Make the big window be indented 50 pixels from each edge
@@ -39,6 +40,8 @@ public class MainApplicationFrame extends JFrame
 
         setContentPane(desktopPane);
 
+        this.controller = new GameVisualizer();
+
         StateHandler stateHandler = new StateHandler(dir);
         Map<String, State> states = stateHandler.restoreAllData();
         
@@ -47,10 +50,18 @@ public class MainApplicationFrame extends JFrame
         // logWindow.restoreState(states.get("LogWindow"));
         addWindow(logWindow);
 
-        GameWindow gameWindow = new GameWindow();
+        GameWindow gameWindow = new GameWindow(controller);
         gameWindow.setSize(400,  400);
         // gameWindow.restoreState(states.get("GameWindow"));
         addWindow(gameWindow);
+
+        CoordsWindow coordsWindow = new CoordsWindow(controller);
+        coordsWindow.setSize(200, 200);
+        addWindow(coordsWindow);
+
+        restoreStates();
+
+        controller.addObservers(List.of(coordsWindow));
 
         UIManager.put("OptionPane.yesButtonText", "Да");
         UIManager.put("OptionPane.noButtonText", "Нет");
@@ -64,7 +75,6 @@ public class MainApplicationFrame extends JFrame
         setJMenuBar(generateMenuBar());
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-        restoreStates();
     }
     
     protected LogWindow createLogWindow()
