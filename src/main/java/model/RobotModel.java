@@ -5,7 +5,7 @@ import java.util.Observable;
 public class RobotModel extends Observable {
     public static final Integer ROBOT_MOVED = 1;
     private static final double MAX_VELOCITY = 0.1;
-    private static final double MAX_ANGULAR_VELOCITY = 0.001;
+    private static final double MAX_ANGULAR_VELOCITY = 0.01;
     private volatile double m_robotPositionX = 100;
     private volatile double m_robotPositionY = 100;
     private volatile double m_robotDirection = 0;
@@ -71,12 +71,12 @@ public class RobotModel extends Observable {
         double velocity = MAX_VELOCITY;
         double angleToTarget = angleTo(m_robotPositionX, m_robotPositionY, targetPositionX, targetPositionY);
         double angularVelocity = 0;
-        if (angleToTarget > m_robotDirection)
-        {
+
+        double angle = asNormalizedRadians(angleToTarget - m_robotDirection);
+
+        if (angle < Math.PI / 2) {
             angularVelocity = MAX_ANGULAR_VELOCITY;
-        }
-        if (angleToTarget < m_robotDirection)
-        {
+        } else if (angle > Math.PI / 2) {
             angularVelocity = -MAX_ANGULAR_VELOCITY;
         }
 
