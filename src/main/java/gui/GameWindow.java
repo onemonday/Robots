@@ -1,5 +1,6 @@
 package gui;
 
+import robot_logic.RobotController;
 import save_logic.Saveable;
 import save_logic.State;
 
@@ -11,14 +12,11 @@ import javax.swing.JPanel;
 
 public class GameWindow extends JInternalFrame implements Saveable
 {
-    private final GameVisualizer m_visualizer;
-
-    public GameWindow(GameVisualizer controller)
+    public GameWindow(RobotController controller)
     {
         super("Игровое поле", true, true, true, true);
-        m_visualizer = controller;
         JPanel panel = new JPanel(new BorderLayout());
-        panel.add(m_visualizer, BorderLayout.CENTER);
+        panel.add(controller.getVisualizer(), BorderLayout.CENTER);
         getContentPane().add(panel);
         pack();
     }
