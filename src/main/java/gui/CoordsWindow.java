@@ -1,6 +1,6 @@
 package gui;
 
-import model.RobotModel;
+import robot_logic.RobotController;
 import save_logic.Saveable;
 import save_logic.State;
 
@@ -12,13 +12,13 @@ import java.util.Observer;
 
 public class CoordsWindow extends JInternalFrame implements Saveable, Observer {
     private TextArea textArea;
-    private final GameVisualizer m_visualizer;
-    public CoordsWindow(GameVisualizer controller) {
+    private final RobotController controller;
+    public CoordsWindow(RobotController controller) {
         super("Координаты", true, true, true, true);
-        m_visualizer = controller;
+        this.controller = controller;
 
         textArea = new TextArea();
-        textArea.setText("test text 2");
+        textArea.setText("initial text");
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(textArea, BorderLayout.CENTER);
@@ -68,15 +68,15 @@ public class CoordsWindow extends JInternalFrame implements Saveable, Observer {
     }
 
     private void onRobotMoved() {
-        String text = "X: " + m_visualizer.getRobotPositionX() + "\n" +
-                "Y: " + m_visualizer.getRobotPositionY();
+        String text = "X: " + controller.getRobotPositionX() + "\n" +
+                "Y: " + controller.getRobotPositionY();
 
         textArea.setText(text);
     }
 
     @Override
     public void update(Observable o, Object arg) {
-        if (RobotModel.ROBOT_MOVED.equals(arg)) {
+        if (RobotController.ROBOT_MOVED.equals(arg)) {
             onRobotMoved();
         }
     }
