@@ -70,51 +70,14 @@ public class GameVisualizer extends JPanel
         m_targetPositionX = p.x;
         m_targetPositionY = p.y;
     }
-
-    public Double getRobotPositionX() {
-        return robot.getRobotPositionX();
-    }
-
-    public Double getRobotPositionY() {
-        return robot.getRobotPositionY();
-    }
     
     protected void onRedrawEvent()
     {
         EventQueue.invokeLater(this::repaint);
     }
 
-    private static double distance(double x1, double y1, double x2, double y2)
-    {
-        double diffX = x1 - x2;
-        double diffY = y1 - y2;
-        return Math.sqrt(diffX * diffX + diffY * diffY);
-    }
-    
-    private static double angleTo(double fromX, double fromY, double toX, double toY)
-    {
-        double diffX = toX - fromX;
-        double diffY = toY - fromY;
-        
-        return asNormalizedRadians(Math.atan2(diffY, diffX));
-    }
-    
     protected void onModelUpdateEvent() {
         robot.moveRobot(m_targetPositionX, m_targetPositionY, duration);
-    }
-
-    private static double asNormalizedRadians(double angle)
-    {
-
-        while (angle < 0)
-        {
-            angle += 2*Math.PI;
-        }
-        while (angle >= 2*Math.PI)
-        {
-            angle -= 2*Math.PI;
-        }
-        return angle;
     }
     
     private static int round(double value)
@@ -166,4 +129,11 @@ public class GameVisualizer extends JPanel
         g.setColor(Color.BLACK);
         drawOval(g, x, y, 5, 5);
     }
+
+//    @Override
+//    public void update(Observable o, Object arg) {
+//        if (RobotModel.ROBOT_MOVED.equals(arg)) {
+//           onRedrawEvent();
+//        }
+//    }
 }

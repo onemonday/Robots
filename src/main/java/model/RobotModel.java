@@ -5,7 +5,7 @@ import java.util.Observable;
 public class RobotModel extends Observable {
     public static final Integer ROBOT_MOVED = 1;
     private static final double MAX_VELOCITY = 0.1;
-    private static final double MAX_ANGULAR_VELOCITY = 0.01;
+    private static final double MAX_ANGULAR_VELOCITY = 0.001;
     private volatile double m_robotPositionX = 100;
     private volatile double m_robotPositionY = 100;
     private volatile double m_robotDirection = 0;
