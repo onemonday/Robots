@@ -1,52 +1,29 @@
 package gui;
 
-import java.awt.*;
-import java.beans.PropertyVetoException;
-
-import javax.swing.JInternalFrame;
-import javax.swing.JPanel;
-
-import log.LogChangeListener;
-import log.LogEntry;
-import log.LogWindowSource;
+import robot_logic.RobotController;
 import save_logic.Saveable;
 import save_logic.State;
 
-public class LogWindow extends JInternalFrame implements LogChangeListener, Saveable
-{
-    private LogWindowSource m_logSource;
-    private TextArea m_logContent;
+import javax.swing.*;
+import java.awt.*;
+import java.beans.PropertyVetoException;
+import java.util.Observable;
+import java.util.Observer;
 
-    public LogWindow(LogWindowSource logSource) 
-    {
-        super("Протокол работы", true, true, true, true);
-        m_logSource = logSource;
-        m_logSource.registerListener(this);
-        m_logContent = new TextArea("");
-        m_logContent.setSize(200, 500);
-        
+public class CoordsWindow extends JInternalFrame implements Saveable, Observer {
+    private TextArea textArea;
+    private final RobotController controller;
+    public CoordsWindow(RobotController controller) {
+        super("Координаты", true, true, true, true);
+        this.controller = controller;
+
+        textArea = new TextArea();
+        textArea.setText("initial text");
+
         JPanel panel = new JPanel(new BorderLayout());
-        panel.add(m_logContent, BorderLayout.CENTER);
+        panel.add(textArea, BorderLayout.CENTER);
         getContentPane().add(panel);
         pack();
-        updateLogContent();
-    }
-
-    private void updateLogContent()
-    {
-        StringBuilder content = new StringBuilder();
-        for (LogEntry entry : m_logSource.all())
-        {
-            content.append(entry.getMessage()).append("\n");
-        }
-        m_logContent.setText(content.toString());
-        m_logContent.invalidate();
-    }
-    
-    @Override
-    public void onLogChanged()
-    {
-        EventQueue.invokeLater(this::updateLogContent);
     }
 
     @Override
@@ -87,6 +64,19 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Save
 
     @Override
     public String getPrefix() {
-        return "LogWindow";
+        return "CoordsWindow";
+    }
+
+    private void onRobotMoved() {
+        String text = "X: " + controller.getRobotPositionX() + "\n" +
+                "Y: " + controller.getRobotPositionY();
+        textArea.setText(text);
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        if (RobotController.ROBOT_MOVED.equals(arg)) {
+            onRobotMoved();
+        }
     }
 }

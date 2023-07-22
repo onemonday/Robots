@@ -5,6 +5,7 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.Map;
 import javax.swing.*;
 
 import log.Logger;
+import robot_logic.RobotController;
 import save_logic.Saveable;
 import save_logic.State;
 import save_logic.StateHandler;
@@ -26,6 +28,7 @@ public class MainApplicationFrame extends JFrame
 {
     private final JDesktopPane desktopPane = new JDesktopPane();
     private final String dir = (System.getProperty("user.home") + "/state.json");
+    private final RobotController controller;
     
     public MainApplicationFrame() {
         //Make the big window be indented 50 pixels from each edge
@@ -38,18 +41,26 @@ public class MainApplicationFrame extends JFrame
 
         setContentPane(desktopPane);
 
+        this.controller = new RobotController();
+
         StateHandler stateHandler = new StateHandler(dir);
         Map<String, State> states = stateHandler.restoreAllData();
         
         
         LogWindow logWindow = createLogWindow();
-        logWindow.restoreState(states.get("LogWindow"));
         addWindow(logWindow);
 
-        GameWindow gameWindow = new GameWindow();
-        gameWindow.restoreState(states.get("GameWindow"));
-        // gameWindow.setSize(400,  400);
+        GameWindow gameWindow = new GameWindow(controller);
+        gameWindow.setSize(400,  400);
         addWindow(gameWindow);
+
+        CoordsWindow coordsWindow = new CoordsWindow(controller);
+        coordsWindow.setSize(200, 200);
+        addWindow(coordsWindow);
+
+        restoreStates();
+
+        controller.addObservers(List.of(coordsWindow));
 
         UIManager.put("OptionPane.yesButtonText", "Да");
         UIManager.put("OptionPane.noButtonText", "Нет");
@@ -62,6 +73,7 @@ public class MainApplicationFrame extends JFrame
         });
         setJMenuBar(generateMenuBar());
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
     }
     
     protected LogWindow createLogWindow()
@@ -106,46 +118,21 @@ public class MainApplicationFrame extends JFrame
         }
     }
 
-//    private void restoreStates() {
-//        StateHandler stateHandler = new StateHandler(dir);
-//        var stateMap = stateHandler.restoreAllData();
-//        var keys = stateMap.keySet();
-//
-//        for (final JInternalFrame frame : desktopPane.getAllFrames()) {
-//            if (frame instanceof Saveable && keys.contains(((Saveable) frame).getPrefix())) {
-//                ((Saveable) frame).restoreState(stateMap.get(((Saveable) frame).getPrefix()));
-//            }
-//        }
-//    }
-    
-//    protected JMenuBar createMenuBar() {
-//        JMenuBar menuBar = new JMenuBar();
-// 
-//        //Set up the lone menu.
-//        JMenu menu = new JMenu("Document");
-//        menu.setMnemonic(KeyEvent.VK_D);
-//        menuBar.add(menu);
-// 
-//        //Set up the first menu item.
-//        JMenuItem menuItem = new JMenuItem("New");
-//        menuItem.setMnemonic(KeyEvent.VK_N);
-//        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-//                KeyEvent.VK_N, ActionEvent.ALT_MASK));
-//        menuItem.setActionCommand("new");
-////        menuItem.addActionListener(this);
-//        menu.add(menuItem);
-// 
-//        //Set up the second menu item.
-//        menuItem = new JMenuItem("Quit");
-//        menuItem.setMnemonic(KeyEvent.VK_Q);
-//        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-//                KeyEvent.VK_Q, ActionEvent.ALT_MASK));
-//        menuItem.setActionCommand("quit");
-////        menuItem.addActionListener(this);
-//        menu.add(menuItem);
-// 
-//        return menuBar;
-//    }
+    private void restoreStates() {
+        File file = new File (dir);
+        if (!file.exists())
+            return;
+
+        StateHandler stateHandler = new StateHandler(dir);
+        var stateMap = stateHandler.restoreAllData();
+        var keys = stateMap.keySet();
+
+        for (final JInternalFrame frame : desktopPane.getAllFrames()) {
+            if (frame instanceof Saveable && keys.contains(((Saveable) frame).getPrefix())) {
+                ((Saveable) frame).restoreState(stateMap.get(((Saveable) frame).getPrefix()));
+            }
+        }
+    }
     
     private JMenuBar generateMenuBar()
     {

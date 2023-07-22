@@ -38,21 +38,6 @@ public class StateHandler {
         return jsonArray;
     }
 
-//    private Map<String, State> constructMapOfStates(JSONObject jsonObject) {
-//        var prefixes = jsonObject.keySet();
-//
-//        Map<String, State> mapOfStates = new HashMap<>();
-//        prefixes.forEach(prefix -> {
-//            JSONObject jsonObjectLowerLever = (JSONObject) jsonObject.get(prefix);
-//            var keys = jsonObjectLowerLever.keySet();
-//
-//            mapOfStates.put((String) prefix, new State());
-//            keys.forEach(key -> mapOfStates.get(prefix).putElement((String) key, jsonObject.get((String)key)));
-//        });
-//
-//        return mapOfStates;
-//    }
-
     private State constructState(Map<String, Object> map) {
         State state = new State();
         map.keySet().forEach(key -> {
@@ -63,16 +48,6 @@ public class StateHandler {
     }
 
     public void save(List<Saveable> saveableObjects) {
-//        try {
-//            if (!file.createNewFile()) {
-//                file.delete();
-//                file.createNewFile();
-//            }
-//        } catch (IOException e) {
-//            System.out.println(e.getMessage());
-//            e.printStackTrace();
-//        }
-
         JSONArray jsonArray = constructJsonArray(saveableObjects);
 
         try {
@@ -108,11 +83,7 @@ public class StateHandler {
                     State state = constructState(element);
                     stateMap.put(key, state);
                 });
-//                stateMap.putAll(map);
             });
-
-            System.out.println(stateMap);
-            System.out.println(stateMap.getClass());
             return stateMap;
 
         } catch (IOException | ParseException e) {
