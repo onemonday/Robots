@@ -70,7 +70,6 @@ public class CoordsWindow extends JInternalFrame implements Saveable, Observer {
     private void onRobotMoved() {
         String text = "X: " + controller.getRobotPositionX() + "\n" +
                 "Y: " + controller.getRobotPositionY();
-
         textArea.setText(text);
     }
 
